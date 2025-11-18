@@ -127,7 +127,7 @@ export default function Home() {
           {isAuthenticated ? (
             <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white text-center">
               <h3 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h3>
-              <p className="mb-6">You're logged in and ready to go.</p>
+              <p className="mb-6">You&apos;re logged in and ready to go.</p>
               <button
                 onClick={() => router.push('/dashboard')}
                 className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"

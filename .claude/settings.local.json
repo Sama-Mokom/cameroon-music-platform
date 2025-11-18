@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(npm run start:dev:*)",
+      "Bash(cat:*)",
+      "Bash(node -e:*)",
+      "Bash(node check-songs.js:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

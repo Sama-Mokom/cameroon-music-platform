@@ -1,17 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/auth-store'
 import { apiClient } from '@/lib/api-client'
+import { artistApi } from '@/lib/api/artist'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
-import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle } from 'lucide-react'
+import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react'
+import type { ArtistProfile } from '@/types/artist'
 import './dashboard.css'
 
 function DashboardContent() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [artistProfile, setArtistProfile] = useState<ArtistProfile | null>(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+  const [dismissedVerification, setDismissedVerification] = useState(false)
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -32,8 +37,87 @@ function DashboardContent() {
 
   const isArtist = user?.role === 'ARTIST'
 
+  // Load artist profile if user is an artist
+  useEffect(() => {
+    if (isArtist) {
+      loadArtistProfile()
+    } else {
+      setLoadingProfile(false)
+    }
+  }, [isArtist])
+
+  const loadArtistProfile = async () => {
+    try {
+      const profile = await artistApi.getMyProfile()
+      setArtistProfile(profile)
+    } catch (error: any) {
+      console.error('Failed to load artist profile:', error)
+      // Profile might not exist yet, which is fine
+    } finally {
+      setLoadingProfile(false)
+    }
+  }
+
+  // Check if artist needs verification
+  const isVerified = artistProfile?.verification?.status === 'VERIFIED'
+  const isPending = artistProfile?.verification?.status === 'PENDING'
+  const needsVerification = isArtist && !isVerified && !isPending && !dismissedVerification
+  const showPendingOverlay = isPending && !dismissedVerification
+
   return (
     <div className="dashboard-container">
+      {/* Verification Overlay for Unverified Artists */}
+      {isArtist && needsVerification && (
+        <div className="verification-overlay">
+          <div className="verification-card">
+            <ShieldCheck size={64} className="verification-icon" />
+            <h2>Verify Your Artist Account</h2>
+            <p>
+              To access all features and upload music, you need to verify your identity.
+              This helps us maintain a trusted community of artists.
+            </p>
+            <button
+              className="verify-btn"
+              onClick={() => router.push('/artist/verification')}
+            >
+              Start Verification
+            </button>
+            <button
+              className="verify-later-btn"
+              onClick={() => setDismissedVerification(true)}
+            >
+              I&apos;ll do this later
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Pending Verification Overlay */}
+      {isArtist && showPendingOverlay && (
+        <div className="verification-overlay pending">
+          <div className="verification-card">
+            <Loader2 size={64} className="verification-icon spinner" />
+            <h2>Verification in Progress</h2>
+            <p>
+              Your documents are being reviewed by our team. This usually takes 24-48 hours.
+              We&apos;ll notify you once the review is complete.
+            </p>
+            <button
+              className="verify-btn"
+              onClick={() => router.push('/artist/verification')}
+            >
+              View Verification Status
+            </button>
+            <button
+              className="verify-later-btn"
+              onClick={() => setDismissedVerification(true)}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="dashboard-header">
         <div className="header-content">
@@ -59,7 +143,7 @@ function DashboardContent() {
       </header>
 
       {/* Main Content */}
-      <main className="dashboard-main">
+      <main className={`dashboard-main ${(needsVerification || showPendingOverlay) ? 'blurred' : ''}`}>
         <div className="dashboard-content">
           {/* Welcome Section */}
           <section className="welcome-section">
@@ -76,7 +160,14 @@ function DashboardContent() {
                 {isArtist ? <Music size={24} /> : <User size={24} />}
               </div>
               <div className="badge-text">
-                <div className="badge-role">{isArtist ? 'Artist' : 'Listener'}</div>
+                <div className="badge-role">
+                  {isArtist ? 'Artist' : 'Listener'}
+                  {isArtist && isVerified && (
+                    <span className="verified-badge" title="Verified Artist">
+                      <ShieldCheck size={16} />
+                    </span>
+                  )}
+                </div>
                 <div className="badge-email">{user?.email}</div>
               </div>
             </div>
@@ -121,12 +212,41 @@ function DashboardContent() {
             <div className="actions-grid">
               {isArtist ? (
                 <>
-                  <button className="action-card" onClick={() => alert('Coming in Milestone 4!')}>
-                    <Music size={32} />
-                    <div className="action-title">Upload Song</div>
-                    <div className="action-description">Share your latest track</div>
-                  </button>
-                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                  {!isVerified && (
+                    <button
+                      className="action-card verification-card-action"
+                      onClick={() => router.push('/artist/verification')}
+                    >
+                      <ShieldCheck size={32} />
+                      <div className="action-title">
+                        {isPending ? 'Verification Pending' : 'Verify Account'}
+                      </div>
+                      <div className="action-description">
+                        {isPending ? 'Check verification status' : 'Required to upload music'}
+                      </div>
+                    </button>
+                  )}
+                  {isVerified ? (
+                    <>
+                      <button className="action-card" onClick={() => router.push('/artist/songs/upload')}>
+                        <Music size={32} />
+                        <div className="action-title">Upload Song</div>
+                        <div className="action-description">Share your latest track</div>
+                      </button>
+                      <button className="action-card" onClick={() => router.push('/artist/songs')}>
+                        <PlayCircle size={32} />
+                        <div className="action-title">My Songs</div>
+                        <div className="action-description">View your uploaded music</div>
+                      </button>
+                    </>
+                  ) : (
+                    <button className="action-card disabled" disabled>
+                      <Music size={32} />
+                      <div className="action-title">Upload Song</div>
+                      <div className="action-description">Requires verification</div>
+                    </button>
+                  )}
+                  <button className="action-card" onClick={() => router.push('/artist/profile/edit')}>
                     <User size={32} />
                     <div className="action-title">Edit Profile</div>
                     <div className="action-description">Update your artist info</div>
@@ -137,9 +257,27 @@ function DashboardContent() {
                     <div className="action-description">Track your performance</div>
                   </button>
                 </>
+              ) : user?.role === 'ADMIN' ? (
+                <>
+                  <button className="action-card" onClick={() => router.push('/admin/verifications')}>
+                    <ShieldCheck size={32} />
+                    <div className="action-title">Manage Verifications</div>
+                    <div className="action-description">Review artist verification requests</div>
+                  </button>
+                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                    <User size={32} />
+                    <div className="action-title">Manage Users</div>
+                    <div className="action-description">View and manage all users</div>
+                  </button>
+                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                    <TrendingUp size={32} />
+                    <div className="action-title">Platform Analytics</div>
+                    <div className="action-description">View platform statistics</div>
+                  </button>
+                </>
               ) : (
                 <>
-                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                  <button className="action-card" onClick={() => router.push('/songs')}>
                     <PlayCircle size={32} />
                     <div className="action-title">Discover Music</div>
                     <div className="action-description">Find new songs</div>
@@ -161,13 +299,16 @@ function DashboardContent() {
 
           {/* Milestone Notice */}
           <section className="milestone-notice">
-            <h3>🎉 Milestone 2 Complete: Authentication System</h3>
+            <h3>🎉 Milestone 4 Complete: Song Upload & Cloud Storage</h3>
             <p>
-              You've successfully logged in! More features coming in the next milestones:
+              {isArtist
+                ? isVerified
+                  ? "Upload your songs and share your music with the world! Click 'Upload Song' above to get started."
+                  : "Complete verification to start uploading your music!"
+                : "Listen to music from verified artists across Cameroon!"}
             </p>
+            <p>More features coming in the next milestones:</p>
             <ul>
-              <li>M3: Artist Profiles</li>
-              <li>M4: Song Upload & Storage</li>
               <li>M5: Audio Fingerprinting</li>
               <li>M6: Booking System</li>
               <li>M7: Wallet & Payments</li>

@@ -44,8 +44,10 @@ model User {
   updatedAt       DateTime @updatedAt
 
   // Relations
-  refreshTokens RefreshToken[]
-  artistProfile ArtistProfile?
+  refreshTokens       RefreshToken[]
+  artistProfile       ArtistProfile?
+  reviewedVerifications Verification[] // Verifications reviewed by this admin
+  songs               Song[]          // Songs uploaded by this artist
 
   @@map("users")
 }
@@ -53,7 +55,7 @@ model User {
 // Refresh token storage
 model RefreshToken {
   id        String   @id @default(uuid())
-  token     String   @unique
+  token     String   @unique @db.VarChar(500)
   userId    String
   expiresAt DateTime
   createdAt DateTime @default(now())
@@ -66,17 +68,67 @@ model RefreshToken {
 
 // Artist profile (separate from User for clean separation)
 model ArtistProfile {
-  id          String  @id @default(uuid())
-  userId      String  @unique
-  stageName   String?
-  bio         String? @db.Text
-  genre       String?
-  phoneNumber String?
-  verified    Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  stageName    String?
+  bio          String?  @db.Text
+  genres       String?  @db.Text // JSON array stored as text
+  tags         String?  @db.Text // JSON array stored as text
+  phoneNumber  String?
+  avatarUrl    String?
+  coverUrl     String?
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verification Verification?
 
   @@map("artist_profiles")
+}
+
+// Level-1 Verification (ID + Selfie)
+model Verification {
+  id              String             @id @default(uuid())
+  artistProfileId String             @unique
+  idType          String             // "national_id", "passport", "driver_license"
+  idFileUrl       String
+  selfieFileUrl   String
+  status          VerificationStatus @default(PENDING)
+  rejectionReason String?            @db.Text
+  reviewedBy      String?            // Admin user ID who reviewed
+  reviewedAt      DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  artistProfile ArtistProfile @relation(fields: [artistProfileId], references: [id], onDelete: Cascade)
+  reviewer      User?         @relation(fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([artistProfileId])
+  @@map("verifications")
+}
+
+// Song model for Milestone 4
+model Song {
+  id        String   @id @default(uuid())
+  title     String
+  genre     String?
+  artistId  String
+  audioUrl  String   @db.Text // Use TEXT to store long Cloudinary URLs
+  publicId  String   @db.Text // Cloudinary public_id for deletion
+  duration  Int?     // Duration in seconds
+  size      Int?     // File size in bytes
+  format    String?  // Audio format (mp3, wav, etc.)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  artist User @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@index([artistId])
+  @@index([createdAt])
+  @@map("songs")
 }
