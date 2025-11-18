@@ -41,6 +41,46 @@
   animation: float 6s ease-in-out infinite;
 }
 
+/* Update the input wrapper to use relative positioning
+   so the toggle button can be placed absolutely. */
+.login-form-section .input-wrapper {
+  position: relative; /* Ensure the toggle button is positioned relative to this wrapper */
+  display: flex; /* Keep your existing flex for the icon */
+  align-items: center;
+  /* Add more padding/space on the right to accommodate the new button */
+  padding-right: 40px; 
+}
+
+/* Style for the new toggle button */
+.login-form-section .password-toggle-btn {
+  position: absolute; /* Position it over the input field */
+  right: 10px; /* Adjust as needed for spacing */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #737373); /* Use a subtle color */
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  top: 0;
+  transition: color 0.2s;
+  transform: translateX(-200%);
+}
+
+.login-form-section .password-toggle-btn:hover {
+  color: var(--primary-color, #2FFF8D); /* Highlight on hover */
+}
+
+/* Ensure the input itself has enough room and doesn't sit under the button */
+.login-form-section .input-wrapper input {
+  /* Increase padding on the right to make sure text doesn't overlap the button */
+  padding: 0.875rem 50px 0.875rem 3rem; 
+  /* Also check if the input is growing to fill the space */
+  width: 100%;
+}
+
 @keyframes float {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(20px, -20px); }
@@ -173,6 +213,7 @@
   left: 1rem;
   color: #B3B3B3;
   pointer-events: none;
+  z-index: 2;
 }
 
 .input-wrapper input {
