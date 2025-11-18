@@ -47,6 +47,7 @@ model User {
   refreshTokens       RefreshToken[]
   artistProfile       ArtistProfile?
   reviewedVerifications Verification[] // Verifications reviewed by this admin
+  songs               Song[]          // Songs uploaded by this artist
 
   @@map("users")
 }
@@ -108,4 +109,26 @@ model Verification {
   @@index([status])
   @@index([artistProfileId])
   @@map("verifications")
+}
+
+// Song model for Milestone 4
+model Song {
+  id        String   @id @default(uuid())
+  title     String
+  genre     String?
+  artistId  String
+  audioUrl  String   @db.Text // Use TEXT to store long Cloudinary URLs
+  publicId  String   @db.Text // Cloudinary public_id for deletion
+  duration  Int?     // Duration in seconds
+  size      Int?     // File size in bytes
+  format    String?  // Audio format (mp3, wav, etc.)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  artist User @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@index([artistId])
+  @@index([createdAt])
+  @@map("songs")
 }

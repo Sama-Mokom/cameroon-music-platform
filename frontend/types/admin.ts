@@ -12,11 +12,13 @@ export interface VerificationItem {
   idType: 'national_id' | 'passport' | 'driver_license';
   idFileUrl: string;
   selfieFileUrl: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  submittedAt: string;
+  status: 'PENDING' | 'VERIFIED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string;
   reviewedAt?: string | null;
   reviewedBy?: string | null;
   rejectionReason?: string | null;
+  artistProfileId: string;
 }
 
 export interface VerificationDetailResponse extends VerificationItem {}

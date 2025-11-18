@@ -7,10 +7,10 @@ import { Loader2 } from 'lucide-react'
 
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { user, loading } = useAuthStore()
+  const { user, isLoading } = useAuthStore()
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       if (!user) {
         // Not authenticated - redirect to login
         router.push('/login')
@@ -19,10 +19,10 @@ export default function AdminRoute({ children }: { children: React.ReactNode }) 
         router.push('/dashboard')
       }
     }
-  }, [user, loading, router])
+  }, [user, isLoading, router])
 
   // Show loading state while checking authentication
-  if (loading) {
+  if (isLoading) {
     return (
       <div style={{
         display: 'flex',

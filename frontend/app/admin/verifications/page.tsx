@@ -171,7 +171,7 @@ function AdminVerificationsContent() {
                         <span className="id-type-badge">{getIdTypeLabel(verification.idType)}</span>
                         <span className="card-date">
                           <Clock size={14} />
-                          {formatDate(verification.submittedAt)}
+                          {formatDate(verification.createdAt)}
                         </span>
                       </div>
                     </div>

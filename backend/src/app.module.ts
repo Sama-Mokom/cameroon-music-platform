@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ArtistModule } from './modules/artist/artist.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { SongsModule } from './modules/songs/songs.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AdminModule } from './modules/admin/admin.module';
     ArtistModule,
     UploadModule,
     AdminModule,
+    SongsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

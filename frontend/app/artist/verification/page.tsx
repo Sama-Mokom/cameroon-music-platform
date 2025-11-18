@@ -159,9 +159,9 @@ export default function VerificationUploadPage() {
             <span>Pending Review</span>
           </div>
         );
-      case 'APPROVED':
+      case 'VERIFIED':
         return (
-          <div className="status-badge status-approved">
+          <div className="status-badge status-verified">
             <CheckCircle size={16} />
             <span>Verified</span>
           </div>
@@ -213,7 +213,7 @@ export default function VerificationUploadPage() {
   }
 
   // If already verified, show success message
-  if (profile?.verification?.status === 'APPROVED') {
+  if (profile?.verification?.status === 'VERIFIED') {
     return (
       <div className="verification-page">
         <div className="container">
@@ -226,7 +226,7 @@ export default function VerificationUploadPage() {
 
           <div className="success-container">
             <CheckCircle size={64} className="success-icon" />
-            <h1>You're Already Verified!</h1>
+            <h1>You&apos;re Already Verified!</h1>
             <p>Your artist account has been verified by our team.</p>
             <Link href="/dashboard" className="btn-primary">
               Go to Dashboard
@@ -549,7 +549,7 @@ export default function VerificationUploadPage() {
           color: #2FFF8D;
         }
 
-        .status-approved {
+        .status-verified {
           background: rgba(47, 255, 141, 0.1);
           color: #2FFF8D;
         }

@@ -253,7 +253,7 @@ function VerificationDetailContent() {
                 <Calendar size={20} />
                 <div>
                   <span className="info-label">Submitted</span>
-                  <span className="info-value">{formatDate(verification.submittedAt)}</span>
+                  <span className="info-value">{formatDate(verification.createdAt)}</span>
                 </div>
               </div>
             </div>
@@ -733,5 +733,13 @@ function VerificationDetailContent() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function VerificationDetailPage() {
+  return (
+    <AdminRoute>
+      <VerificationDetailContent />
+    </AdminRoute>
   );
 }

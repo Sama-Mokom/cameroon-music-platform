@@ -58,7 +58,7 @@ function DashboardContent() {
   }
 
   // Check if artist needs verification
-  const isVerified = artistProfile?.verification?.status === 'APPROVED'
+  const isVerified = artistProfile?.verification?.status === 'VERIFIED'
   const isPending = artistProfile?.verification?.status === 'PENDING'
   const needsVerification = isArtist && !isVerified && !isPending && !dismissedVerification
   const showPendingOverlay = isPending && !dismissedVerification
@@ -85,7 +85,7 @@ function DashboardContent() {
               className="verify-later-btn"
               onClick={() => setDismissedVerification(true)}
             >
-              I'll do this later
+              I&apos;ll do this later
             </button>
           </div>
         </div>
@@ -99,7 +99,7 @@ function DashboardContent() {
             <h2>Verification in Progress</h2>
             <p>
               Your documents are being reviewed by our team. This usually takes 24-48 hours.
-              We'll notify you once the review is complete.
+              We&apos;ll notify you once the review is complete.
             </p>
             <button
               className="verify-btn"
@@ -225,11 +225,26 @@ function DashboardContent() {
                       </div>
                     </button>
                   )}
-                  <button className="action-card" onClick={() => alert('Coming in Milestone 4!')}>
-                    <Music size={32} />
-                    <div className="action-title">Upload Song</div>
-                    <div className="action-description">Share your latest track</div>
-                  </button>
+                  {isVerified ? (
+                    <>
+                      <button className="action-card" onClick={() => router.push('/artist/songs/upload')}>
+                        <Music size={32} />
+                        <div className="action-title">Upload Song</div>
+                        <div className="action-description">Share your latest track</div>
+                      </button>
+                      <button className="action-card" onClick={() => router.push('/artist/songs')}>
+                        <PlayCircle size={32} />
+                        <div className="action-title">My Songs</div>
+                        <div className="action-description">View your uploaded music</div>
+                      </button>
+                    </>
+                  ) : (
+                    <button className="action-card disabled" disabled>
+                      <Music size={32} />
+                      <div className="action-title">Upload Song</div>
+                      <div className="action-description">Requires verification</div>
+                    </button>
+                  )}
                   <button className="action-card" onClick={() => router.push('/artist/profile/edit')}>
                     <User size={32} />
                     <div className="action-title">Edit Profile</div>
@@ -239,6 +254,24 @@ function DashboardContent() {
                     <TrendingUp size={32} />
                     <div className="action-title">View Analytics</div>
                     <div className="action-description">Track your performance</div>
+                  </button>
+                </>
+              ) : user?.role === 'ADMIN' ? (
+                <>
+                  <button className="action-card" onClick={() => router.push('/admin/verifications')}>
+                    <ShieldCheck size={32} />
+                    <div className="action-title">Manage Verifications</div>
+                    <div className="action-description">Review artist verification requests</div>
+                  </button>
+                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                    <User size={32} />
+                    <div className="action-title">Manage Users</div>
+                    <div className="action-description">View and manage all users</div>
+                  </button>
+                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                    <TrendingUp size={32} />
+                    <div className="action-title">Platform Analytics</div>
+                    <div className="action-description">View platform statistics</div>
                   </button>
                 </>
               ) : (
@@ -265,15 +298,16 @@ function DashboardContent() {
 
           {/* Milestone Notice */}
           <section className="milestone-notice">
-            <h3>🎉 Milestone 3 In Progress: Artist Profiles</h3>
+            <h3>🎉 Milestone 4 Complete: Song Upload & Cloud Storage</h3>
             <p>
               {isArtist
-                ? "You can now create and edit your artist profile! Click 'Edit Profile' above to get started."
-                : "Discover artist profiles and connect with your favorite creators!"}
+                ? isVerified
+                  ? "Upload your songs and share your music with the world! Click 'Upload Song' above to get started."
+                  : "Complete verification to start uploading your music!"
+                : "Listen to music from verified artists across Cameroon!"}
             </p>
             <p>More features coming in the next milestones:</p>
             <ul>
-              <li>M4: Song Upload & Storage</li>
               <li>M5: Audio Fingerprinting</li>
               <li>M6: Booking System</li>
               <li>M7: Wallet & Payments</li>
