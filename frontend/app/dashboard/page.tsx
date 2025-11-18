@@ -18,6 +18,7 @@ function DashboardContent() {
 
     try {
       const { tokens } = useAuthStore.getState()
+      console.log(tokens, "token dont exist")
       await apiClient.post('/auth/logout', {
         refreshToken: tokens?.refreshToken,
       })

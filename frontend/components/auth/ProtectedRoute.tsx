@@ -1,3 +1,4 @@
+// components/auth/ProtectedRoute.tsx
 'use client'
 
 import { useEffect } from 'react'
@@ -12,22 +13,36 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const router = useRouter()
-  const { isAuthenticated, user, isLoading } = useAuthStore()
+  // Include the new _hasHydrated state property
+  const { isAuthenticated, user, _hasHydrated } = useAuthStore(
+    (state) => ({
+      isAuthenticated: state.isAuthenticated,
+      user: state.user,
+      _hasHydrated: state._hasHydrated, // <-- Get the new state
+    })
+  );
 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login')
-    }
+    // 🚨 Critical Change: Only perform routing checks AFTER the store is hydrated
+    if (_hasHydrated) {
+      // 1. Redirect to login if not authenticated
+      if (!isAuthenticated) {
+        router.push('/login')
+        return; // Stop further checks
+      }
 
-    // Check role if required
-    if (!isLoading && isAuthenticated && requiredRole && user?.role !== requiredRole) {
-      router.push('/dashboard') // Redirect to dashboard if insufficient permissions
+      // 2. Check role if required
+      if (requiredRole && user?.role !== requiredRole) {
+        // Redirect to dashboard if insufficient permissions
+        router.push('/dashboard') 
+      }
     }
-  }, [isAuthenticated, isLoading, user, requiredRole, router])
+  }, [isAuthenticated, _hasHydrated, user, requiredRole, router])
 
-  // Show loading state
-  if (isLoading || !isAuthenticated) {
+  // --- RENDERING LOGIC ---
+
+  // 1. Show loading/spinner if the store is NOT yet hydrated
+  if (!_hasHydrated) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -43,12 +58,20 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
           alignItems: 'center',
           gap: '1rem'
         }}>
+          {/* Note: In a real app, you need to define the 'spin' animation in your CSS */}
           <Loader2 size={48} style={{ animation: 'spin 1s linear infinite' }} />
-          <p style={{ fontSize: '1.125rem', color: '#B3B3B3' }}>Loading...</p>
+          <p style={{ fontSize: '1.125rem', color: '#B3B3B3' }}>Loading Session...</p>
         </div>
       </div>
     )
   }
 
+  // 2. If hydrated but NOT authenticated, return null while waiting for the useEffect redirect.
+  // We don't render children until we are certain the user is authenticated.
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  // 3. If hydrated AND authenticated, render the children.
   return <>{children}</>
 }

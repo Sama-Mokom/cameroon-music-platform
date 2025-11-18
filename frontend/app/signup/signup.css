@@ -41,6 +41,28 @@
   animation: pulse 4s ease-in-out infinite;
 }
 
+/* 🚨 NEW: Password Toggle Button Styles */
+.password-toggle-btn {
+   transition: color 0.2s;
+ position: absolute;
+ z-index: 2; /* Ensure the button is above the input field */
+ right: 10px; /* Position it 10px from the right edge of the input box */
+ justify-content: center;
+ top: 50%;
+ align-items: center;
+ transform: translateY(-50%); /* CRITICAL: Vertical centering */
+ display: flex;
+ background: none;
+ cursor: pointer;
+ border: none;
+ padding: 0;
+ color: #B3B3B3; /* Subtle color */
+}
+
+.password-toggle-btn:hover {
+ color: #2FFF8D; /* Highlight on hover */
+}
+
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }

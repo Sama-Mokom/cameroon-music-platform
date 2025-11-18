@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { apiClient } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { AuthResponse, RegisterRequest } from '@/types/auth'
-import { Music, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+// 🚨 Import Eye and EyeOff for the toggle functionality
+import { Music, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import './signup.css'
 
 export default function SignupPage() {
@@ -21,9 +22,24 @@ export default function SignupPage() {
   })
 
   const [confirmPassword, setConfirmPassword] = useState('')
+  
+  // 🚨 NEW STATE: For password visibility toggles
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  // 🚨 NEW HANDLER: Toggle for the main password field
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev)
+  }
+
+  // 🚨 NEW HANDLER: Toggle for the confirm password field
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev)
+  }
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
@@ -100,7 +116,7 @@ export default function SignupPage() {
   return (
     <div className="signup-container">
       <div className="signup-card">
-        {/* Left side - Branding */}
+        {/* Left side - Branding (UNCHANGED) */}
         <div className="signup-branding">
           <div className="brand-content">
             <div className="brand-icon">
@@ -151,7 +167,7 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="signup-form">
-            {/* Account Type Selection */}
+            {/* Account Type Selection (UNCHANGED) */}
             <div className="account-type-selector">
               <button
                 type="button"
@@ -178,7 +194,7 @@ export default function SignupPage() {
               </button>
             </div>
 
-            {/* Name Field */}
+            {/* Name Field (UNCHANGED) */}
             <div className="form-group">
               <label htmlFor="name">Full Name</label>
               <div className="input-wrapper">
@@ -197,7 +213,7 @@ export default function SignupPage() {
               {fieldErrors.name && <span className="field-error">{fieldErrors.name}</span>}
             </div>
 
-            {/* Email Field */}
+            {/* Email Field (UNCHANGED) */}
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
               <div className="input-wrapper">
@@ -216,14 +232,15 @@ export default function SignupPage() {
               {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
             </div>
 
-            {/* Password Field */}
+            {/* 🔑 Password Field (UPDATED with Toggle) */}
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-wrapper">
                 <Lock className="input-icon" size={20} />
                 <input
                   id="password"
-                  type="password"
+                  // 🚨 DYNAMIC TYPE
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -231,18 +248,30 @@ export default function SignupPage() {
                   disabled={isLoading}
                   required
                 />
+                {/* 🚨 PASSWORD TOGGLE BUTTON */}
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  disabled={isLoading}
+                >
+                  {/* 🚨 DYNAMIC ICON */}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
               {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
             </div>
 
-            {/* Confirm Password Field */}
+            {/* 🔑 Confirm Password Field (UPDATED with Toggle) */}
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <div className="input-wrapper">
                 <Lock className="input-icon" size={20} />
                 <input
                   id="confirmPassword"
-                  type="password"
+                  // 🚨 DYNAMIC TYPE
+                  type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -250,11 +279,22 @@ export default function SignupPage() {
                   disabled={isLoading}
                   required
                 />
+                {/* 🚨 CONFIRM PASSWORD TOGGLE BUTTON */}
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={toggleConfirmPasswordVisibility}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  disabled={isLoading}
+                >
+                  {/* 🚨 DYNAMIC ICON */}
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
               {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Button (UNCHANGED) */}
             <button type="submit" className="submit-btn" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -266,7 +306,7 @@ export default function SignupPage() {
               )}
             </button>
 
-            {/* Login Link */}
+            {/* Login Link (UNCHANGED) */}
             <div className="form-footer">
               Already have an account?{' '}
               <Link href="/login" className="link">
