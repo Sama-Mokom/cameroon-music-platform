@@ -17,23 +17,26 @@ This platform provides:
 ### Frontend
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Styling**: TailwindCSS + ShadCN UI
-- **State Management**: Zustand
-- **API Client**: Axios + React Query
+- **Styling**: TailwindCSS + Vanilla CSS
+- **State Management**: Zustand (with persistence)
+- **API Client**: Axios (with auto token refresh)
 - **Validation**: Zod
+- **Icons**: Lucide React
 
 ### Backend
 - **Framework**: NestJS
 - **Database**: MySQL (Prisma ORM)
-- **Cache/Queue**: Redis + BullMQ (optional)
-- **Authentication**: JWT (Passport)
-- **File Processing**: Multer, FFmpeg, Chromaprint
+- **Cache/Session**: Redis (ioredis)
+- **Authentication**: JWT (Passport) with refresh tokens
+- **Validation**: Zod schemas
+- **Security**: bcrypt password hashing, CORS protection
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 18+
-- XAMPP (with MySQL running)
+- XAMPP (with MySQL running on port 3306)
+- Redis (optional but recommended for production)
 - npm or yarn
 
 ### Installation
@@ -129,11 +132,26 @@ cameroon-music-platform/
 - [x] Database setup (MySQL with XAMPP)
 - [x] Health check endpoints
 
-### 🔄 Milestone 2: Authentication System (Next)
-- [ ] User registration/login
-- [ ] JWT token management
-- [ ] Role-based access control
-- [ ] Session management
+### ✅ Milestone 2: Authentication System (COMPLETED)
+- [x] User registration with email/password
+- [x] Login with JWT access & refresh tokens
+- [x] Role-based access control (Artist, User, Admin)
+- [x] Session management with Redis
+- [x] Protected routes & auth guards
+- [x] Automatic token refresh
+- [x] Professional dark-themed UI (signup, login, dashboard)
+- [x] Account type selection (Artist/Listener)
+- [x] Zod validation on backend
+- [x] Zustand state management with persistence
+- [x] Password strength requirements
+- [x] Token rotation & blacklisting
+
+### 🔄 Milestone 3: Artist Profile System (Next)
+- [ ] Artist profile creation & editing
+- [ ] Avatar & cover image upload
+- [ ] Genre selection & tags
+- [ ] Public profile pages
+- [ ] Artist verification system
 
 ### 📅 Upcoming Milestones
 - M3: Artist Profile System
@@ -177,9 +195,16 @@ npm run prisma:studio
 
 ## 🔧 API Documentation
 
-Once the backend is running, API documentation is available at:
-- Health Check: http://localhost:4000/health
-- API Base: http://localhost:4000/api
+Once the backend is running, API endpoints are available at:
+- **Health Check**: `GET http://localhost:4000/api/health`
+- **Auth Endpoints**:
+  - `POST /api/auth/register` - Create account
+  - `POST /api/auth/login` - Sign in
+  - `POST /api/auth/refresh` - Refresh access token
+  - `POST /api/auth/logout` - Sign out
+  - `GET /api/auth/me` - Get current user (protected)
+- **User Endpoints**:
+  - `GET /api/users/:id` - Get user by ID (protected)
 
 ## 🤝 Contributing
 

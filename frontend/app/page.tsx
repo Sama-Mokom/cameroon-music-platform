@@ -1,10 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Check, X, Loader2 } from 'lucide-react'
 import axios from 'axios'
+import Link from 'next/link'
+import { useAuthStore } from '@/stores/auth-store'
+import { getApiUrl } from '@/lib/get-api-url'
 
 export default function Home() {
+  const router = useRouter()
+  const { isAuthenticated, user } = useAuthStore()
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking')
   const [dbStatus, setDbStatus] = useState<'checking' | 'online' | 'offline'>('checking')
 
@@ -14,7 +20,8 @@ export default function Home() {
 
   const checkApiHealth = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/health')
+      const apiUrl = getApiUrl()
+      const response = await axios.get(`${apiUrl}/api/health`)
       setApiStatus('online')
       if (response.data.database === 'connected') {
         setDbStatus('online')
@@ -116,39 +123,60 @@ export default function Home() {
             )}
           </div>
 
-          {/* Milestone Info */}
-          <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">🔵 Milestone 1: Complete</h3>
-            <p className="mb-4">Project initialization successful! The following components are ready:</p>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center">
-                <Check className="h-5 w-5 mr-2" />
-                Next.js 14 with App Router
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 mr-2" />
-                TailwindCSS with Dark Mode
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 mr-2" />
-                TypeScript Configuration
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 mr-2" />
-                NestJS Backend Structure
-              </li>
-              <li className="flex items-center">
-                <Check className="h-5 w-5 mr-2" />
-                MySQL Database (XAMPP)
-              </li>
-            </ul>
-            <button 
-              onClick={checkApiHealth}
-              className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Refresh Status
-            </button>
-          </div>
+          {/* Auth Status / CTA */}
+          {isAuthenticated ? (
+            <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white text-center">
+              <h3 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h3>
+              <p className="mb-6">You're logged in and ready to go.</p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white">
+              <h3 className="text-2xl font-bold mb-4">🎉 Milestone 2: Authentication Complete</h3>
+              <p className="mb-4">Full authentication system is now live:</p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 mr-2" />
+                  User Registration & Login
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 mr-2" />
+                  JWT Access & Refresh Tokens
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 mr-2" />
+                  Protected Routes & Auth Guards
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 mr-2" />
+                  Artist & User Account Types
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 mr-2" />
+                  Redis Session Management
+                </li>
+              </ul>
+              <div className="flex gap-4">
+                <Link
+                  href="/signup"
+                  className="flex-1 bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center"
+                >
+                  Create Account
+                </Link>
+                <Link
+                  href="/login"
+                  className="flex-1 bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors text-center"
+                >
+                  Sign In
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>

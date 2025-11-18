@@ -1,14 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from './common/prisma/prisma.service';
+import { RedisService } from './common/redis/redis.service';
 
 @Injectable()
 export class AppService {
-  getHealth() {
+  constructor(
+    private prisma: PrismaService,
+    private redis: RedisService,
+  ) {}
+
+  async getHealth() {
+    const isDatabaseHealthy = await this.prisma.isHealthy();
+    const isRedisHealthy = this.redis.isHealthy();
+
     return {
-      status: 'ok',
+      status: isDatabaseHealthy ? 'ok' : 'degraded',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      database: 'connected', // Will be updated when Prisma is connected
-      redis: 'not_configured', // Will be updated in future milestones
+      database: isDatabaseHealthy ? 'connected' : 'disconnected',
+      redis: isRedisHealthy ? 'connected' : 'disconnected',
       environment: process.env.NODE_ENV || 'development',
     };
   }
