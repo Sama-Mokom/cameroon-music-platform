@@ -8,9 +8,12 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
-  ListMusic
+  ListMusic,
+  Mic,
+  MicOff
 } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audio-player-store';
+import { useVoiceControl, VoiceCommand } from '@/hooks/useVoiceControl';
 import { Waveform } from './Waveform';
 import './audio-player.css';
 
@@ -18,6 +21,7 @@ export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(0.7);
+  const [voiceMessage, setVoiceMessage] = useState<string | null>(null);
 
   const {
     currentSong,
@@ -35,7 +39,70 @@ export function AudioPlayer() {
     previous,
     togglePlay,
     toggleQueue,
+    pause,
+    play,
+    addToQueue,
   } = useAudioPlayerStore();
+
+  // Voice command handler
+  const handleVoiceCommand = (command: VoiceCommand) => {
+    setVoiceMessage(`Command: "${command}"`);
+
+    switch (command) {
+      case 'play':
+        if (!isPlaying) {
+          if (currentSong) {
+            play();
+          } else {
+            setVoiceMessage('No song selected. Please select a song first.');
+          }
+        }
+        break;
+
+      case 'pause':
+        if (isPlaying) {
+          pause();
+        }
+        break;
+
+      case 'stop':
+        pause();
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          setCurrentTime(0);
+        }
+        break;
+
+      case 'next':
+        if (queue.length > 0) {
+          next();
+        } else {
+          setVoiceMessage('Queue is empty. Add songs to queue first.');
+        }
+        break;
+
+      case 'add to queue':
+        if (currentSong) {
+          addToQueue(currentSong);
+          setVoiceMessage(`Added "${currentSong.title}" to queue`);
+        } else {
+          setVoiceMessage('No song playing. Cannot add to queue.');
+        }
+        break;
+    }
+
+    // Clear message after 3 seconds
+    setTimeout(() => setVoiceMessage(null), 3000);
+  };
+
+  // Voice control hook
+  const { isListening, isSupported, toggleListening } = useVoiceControl({
+    onCommand: handleVoiceCommand,
+    onError: (error) => {
+      setVoiceMessage(error);
+      setTimeout(() => setVoiceMessage(null), 4000);
+    },
+  });
 
   // Handle play/pause
   useEffect(() => {
@@ -166,6 +233,13 @@ export function AudioPlayer() {
         }}
       />
 
+      {/* Voice Control Message */}
+      {voiceMessage && (
+        <div className="voice-message">
+          {voiceMessage}
+        </div>
+      )}
+
       <div className="audio-player">
         {/* Song Info */}
         <div className="player-song-info">
@@ -233,8 +307,20 @@ export function AudioPlayer() {
           </div>
         </div>
 
-        {/* Volume and Queue */}
+        {/* Volume, Voice Control, and Queue */}
         <div className="player-right-controls">
+          {/* Voice Control Button */}
+          {isSupported && (
+            <button
+              onClick={toggleListening}
+              className={`player-btn player-voice-btn ${isListening ? 'listening' : ''}`}
+              aria-label={isListening ? 'Stop listening' : 'Start voice control'}
+              title="Voice commands: play, pause, stop, next, add to queue"
+            >
+              {isListening ? <Mic size={20} /> : <MicOff size={20} />}
+            </button>
+          )}
+
           <div className="player-volume-control">
             <button
               onClick={handleVolumeToggle}
