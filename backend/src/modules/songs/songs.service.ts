@@ -85,6 +85,55 @@ export class SongsService {
   }
 
   /**
+   * Get all songs from verified artists (public endpoint with pagination)
+   */
+  async getAllSongs(
+    limit: number = 20,
+    offset: number = 0,
+  ): Promise<{ songs: SongResponseDto[]; total: number }> {
+    // Get total count
+    const total = await this.prisma.song.count({
+      where: {
+        artist: {
+          role: 'ARTIST',
+          artistProfile: {
+            verified: true,
+          },
+        },
+      },
+    });
+
+    // Get paginated songs
+    const songs = await this.prisma.song.findMany({
+      where: {
+        artist: {
+          role: 'ARTIST',
+          artistProfile: {
+            verified: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+      include: {
+        artist: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return {
+      songs: songs.map((song) => this.formatSongResponse(song)),
+      total,
+    };
+  }
+
+  /**
    * Get all songs for the logged-in artist
    */
   async getMySongs(userId: string): Promise<SongResponseDto[]> {

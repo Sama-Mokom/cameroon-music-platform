@@ -276,7 +276,7 @@ function DashboardContent() {
                 </>
               ) : (
                 <>
-                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                  <button className="action-card" onClick={() => router.push('/songs')}>
                     <PlayCircle size={32} />
                     <div className="action-title">Discover Music</div>
                     <div className="action-description">Find new songs</div>

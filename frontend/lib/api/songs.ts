@@ -104,6 +104,32 @@ export async function getMySongs(): Promise<Song[]> {
 }
 
 /**
+ * Get all songs from verified artists (public, paginated)
+ * GET /api/songs/all
+ */
+export async function getAllSongs(
+  limit: number = 20,
+  offset: number = 0
+): Promise<{ songs: Song[]; total: number }> {
+  const response = await fetch(
+    `${API_URL}/api/songs/all?limit=${limit}&offset=${offset}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Failed to fetch songs' }));
+    throw new Error(error.message || 'Failed to fetch songs');
+  }
+
+  return response.json();
+}
+
+/**
  * Get a single song by ID (public endpoint)
  * GET /api/songs/:id
  */

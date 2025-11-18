@@ -1,0 +1,286 @@
+.queue-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.queue-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  max-width: 90vw;
+  background: #121212;
+  border-left: 1px solid #282828;
+  z-index: 1101;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #282828;
+}
+
+.queue-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.queue-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.queue-clear-btn {
+  background: none;
+  border: 1px solid #1DB954;
+  color: #1DB954;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.queue-clear-btn:hover {
+  background: #1DB954;
+  color: #FFFFFF;
+}
+
+.queue-close-btn {
+  background: none;
+  border: none;
+  color: #B3B3B3;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.queue-close-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.queue-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.queue-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+  text-align: center;
+  color: #B3B3B3;
+}
+
+.queue-empty svg {
+  color: #333333;
+  margin-bottom: 1rem;
+}
+
+.queue-empty p {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 0.5rem 0;
+}
+
+.queue-empty span {
+  font-size: 0.875rem;
+}
+
+.queue-list {
+  padding: 0.5rem 0;
+}
+
+.queue-item {
+  padding: 0.75rem 1.5rem;
+  transition: background 0.2s ease;
+}
+
+.queue-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.queue-item-active {
+  background: rgba(29, 185, 84, 0.1);
+}
+
+.queue-item-active:hover {
+  background: rgba(29, 185, 84, 0.15);
+}
+
+.queue-item-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.queue-item-play {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  color: #B3B3B3;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.queue-item-play:hover {
+  color: #1DB954;
+  background: rgba(29, 185, 84, 0.1);
+}
+
+.queue-item-playing {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.playing-bar {
+  width: 3px;
+  background: #1DB954;
+  animation: playing 0.8s ease-in-out infinite;
+}
+
+.playing-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.playing-bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.playing-bar:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes playing {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+.queue-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.queue-item-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queue-item-artist {
+  font-size: 0.75rem;
+  color: #B3B3B3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queue-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #B3B3B3;
+}
+
+.queue-item-genre {
+  padding: 0.25rem 0.5rem;
+  background: #333333;
+  border-radius: 12px;
+  color: #1DB954;
+}
+
+.queue-item-remove {
+  background: none;
+  border: none;
+  color: #B3B3B3;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.queue-item:hover .queue-item-remove {
+  opacity: 1;
+}
+
+.queue-item-remove:hover {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+@media (max-width: 480px) {
+  .queue-panel {
+    width: 100%;
+  }
+
+  .queue-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .queue-item-genre {
+    display: none;
+  }
+}

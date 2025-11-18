@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Body,
+  Query,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -78,6 +79,21 @@ export class SongsController {
     });
 
     return this.songsService.uploadSong(userId, file, dto);
+  }
+
+  /**
+   * GET /api/songs/all
+   * Get all songs from verified artists (public, paginated)
+   */
+  @Get('all')
+  async getAllSongs(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<{ songs: SongResponseDto[]; total: number }> {
+    const limitNum = limit ? parseInt(limit, 10) : 20;
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+
+    return this.songsService.getAllSongs(limitNum, offsetNum);
   }
 
   /**
