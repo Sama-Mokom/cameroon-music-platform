@@ -6,6 +6,8 @@ import { Upload, Music, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { uploadSong } from '@/lib/api/songs';
 import { SongUploadProgress } from '@/types/song';
 import { useAuthStore } from '@/stores/auth-store';
+import DuplicateWarningModal from '@/components/fingerprinting/DuplicateWarningModal';
+import { DuplicateMatch } from '@/types/fingerprint';
 import './upload.css';
 
 const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac'];
@@ -41,6 +43,9 @@ export default function SongUploadPage() {
   });
   const [error, setError] = useState('');
   const [isCheckingVerification, setIsCheckingVerification] = useState(true);
+  const [duplicates, setDuplicates] = useState<DuplicateMatch[]>([]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [uploadedSongTitle, setUploadedSongTitle] = useState('');
 
   // Check if artist is verified
   useEffect(() => {
@@ -185,10 +190,17 @@ export default function SongUploadPage() {
 
       setUploadProgress((prev) => ({ ...prev, status: 'success', progress: 100 }));
 
-      // Redirect to songs list after 2 seconds
-      setTimeout(() => {
-        router.push('/artist/songs');
-      }, 2000);
+      // Check if duplicates were detected
+      if (response.duplicates && response.duplicates.length > 0) {
+        setDuplicates(response.duplicates);
+        setUploadedSongTitle(title.trim());
+        setShowDuplicateModal(true);
+      } else {
+        // No duplicates - redirect to songs list after 2 seconds
+        setTimeout(() => {
+          router.push('/artist/songs');
+        }, 2000);
+      }
     } catch (err: any) {
       console.error('Upload error:', err);
       setUploadProgress((prev) => ({ ...prev, status: 'error' }));
@@ -206,9 +218,22 @@ export default function SongUploadPage() {
       status: 'idle',
     });
     setError('');
+    setDuplicates([]);
+    setShowDuplicateModal(false);
+    setUploadedSongTitle('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleDuplicateModalClose = () => {
+    setShowDuplicateModal(false);
+    router.push('/artist/songs');
+  };
+
+  const handleDuplicateModalProceed = () => {
+    setShowDuplicateModal(false);
+    router.push('/artist/songs');
   };
 
   if (isCheckingVerification) {
@@ -398,6 +423,16 @@ export default function SongUploadPage() {
           </div>
         </form>
       </div>
+
+      {/* Duplicate Warning Modal */}
+      {showDuplicateModal && (
+        <DuplicateWarningModal
+          duplicates={duplicates}
+          uploadedSongTitle={uploadedSongTitle}
+          onClose={handleDuplicateModalClose}
+          onProceed={handleDuplicateModalProceed}
+        />
+      )}
     </div>
   );
 }

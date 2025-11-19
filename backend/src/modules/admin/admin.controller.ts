@@ -27,12 +27,16 @@ import {
   VerificationActionResponse,
 } from './dto/verification-response.dto';
 import { UserRole, VerificationStatus } from '@prisma/client';
+import { FingerprintingService } from '../fingerprinting/fingerprinting.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class AdminController {
-  constructor(private readonly verificationService: VerificationService) {}
+  constructor(
+    private readonly verificationService: VerificationService,
+    private readonly fingerprintingService: FingerprintingService,
+  ) {}
 
   /**
    * GET /api/admin/verifications
@@ -89,6 +93,34 @@ export class AdminController {
       verificationId,
       adminId,
       dto.rejectionReason,
+    );
+  }
+
+  /**
+   * GET /api/admin/duplicates
+   * Get all pending duplicate matches
+   */
+  @Get('duplicates')
+  async getPendingDuplicates() {
+    return this.fingerprintingService.getPendingMatches();
+  }
+
+  /**
+   * POST /api/admin/duplicates/:id/update
+   * Update duplicate match status
+   */
+  @Post('duplicates/:id/update')
+  async updateDuplicateStatus(
+    @Param('id') matchId: string,
+    @GetUser('id') adminId: string,
+    @Body() body: { status: string; resolution?: string; notes?: string },
+  ) {
+    return this.fingerprintingService.updateMatchStatus(
+      matchId,
+      body.status,
+      adminId,
+      body.resolution,
+      body.notes,
     );
   }
 }
