@@ -11,6 +11,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { SongsModule } from './modules/songs/songs.module';
 import { FingerprintingModule } from './modules/fingerprinting/fingerprinting.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FingerprintingModule } from './modules/fingerprinting/fingerprinting.mo
     AdminModule,
     SongsModule,
     FingerprintingModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

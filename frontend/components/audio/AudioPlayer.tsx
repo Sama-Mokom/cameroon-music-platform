@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audio-player-store';
 import { useVoiceControl, VoiceCommand } from '@/hooks/useVoiceControl';
+import { useAuthStore } from '@/stores/auth-store';
+import { trackSongPlay } from '@/lib/api/statistics';
 import { Waveform } from './Waveform';
 import './audio-player.css';
 
@@ -22,6 +24,8 @@ export function AudioPlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(0.7);
   const [voiceMessage, setVoiceMessage] = useState<string | null>(null);
+  const [playTracked, setPlayTracked] = useState(false); // Track if we've already counted this play
+  const playTrackingRef = useRef<{ songId: string | null; tracked: boolean }>({ songId: null, tracked: false });
 
   const {
     currentSong,
@@ -43,6 +47,8 @@ export function AudioPlayer() {
     play,
     addToQueue,
   } = useAudioPlayerStore();
+
+  const { isAuthenticated } = useAuthStore();
 
   // Voice command handler
   const handleVoiceCommand = (command: VoiceCommand) => {
@@ -133,6 +139,10 @@ export function AudioPlayer() {
     if (audioRef.current && currentSong) {
       audioRef.current.src = currentSong.audioUrl;
       audioRef.current.load();
+
+      // Reset play tracking for new song
+      playTrackingRef.current = { songId: currentSong.id, tracked: false };
+
       if (isPlaying) {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
@@ -156,6 +166,25 @@ export function AudioPlayer() {
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
+
+      // Track play after 30 seconds or 50% of duration (whichever comes first)
+      const currentTime = audioRef.current.currentTime;
+      const songDuration = audioRef.current.duration;
+
+      if (
+        isAuthenticated &&
+        currentSong &&
+        !playTrackingRef.current.tracked &&
+        playTrackingRef.current.songId === currentSong.id &&
+        songDuration > 0 &&
+        (currentTime >= 30 || currentTime >= songDuration * 0.5)
+      ) {
+        // Track the play
+        playTrackingRef.current.tracked = true;
+        trackSongPlay(currentSong.id).catch((error) => {
+          console.error('Failed to track play:', error);
+        });
+      }
     }
   };
 

@@ -13,9 +13,17 @@ export default function Home() {
   const { isAuthenticated, user } = useAuthStore()
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking')
   const [dbStatus, setDbStatus] = useState<'checking' | 'online' | 'offline'>('checking')
+  const [currentApiUrl, setCurrentApiUrl] = useState<string>('')
+  const [currentFrontendUrl, setCurrentFrontendUrl] = useState<string>('')
 
   useEffect(() => {
     checkApiHealth()
+    // Set current URLs for display
+    const apiUrl = getApiUrl()
+    setCurrentApiUrl(apiUrl)
+    if (typeof window !== 'undefined') {
+      setCurrentFrontendUrl(`${window.location.protocol}//${window.location.host}`)
+    }
   }, [])
 
   const checkApiHealth = async () => {
@@ -83,7 +91,9 @@ export default function Home() {
                   <StatusIcon status="online" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Frontend (Next.js)</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">localhost:3000</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {currentFrontendUrl || 'localhost:3000'}
+                    </p>
                   </div>
                 </div>
                 <StatusText status="online" />
@@ -95,7 +105,9 @@ export default function Home() {
                   <StatusIcon status={apiStatus} />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">API (NestJS)</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">localhost:4000</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {currentApiUrl || 'localhost:4000'}
+                    </p>
                   </div>
                 </div>
                 <StatusText status={apiStatus} />
