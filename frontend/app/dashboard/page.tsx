@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/auth-store'
 import { apiClient } from '@/lib/api-client'
 import { artistApi } from '@/lib/api/artist'
+import Image from 'next/image'
 import { getMyStatistics, type UserStatistics, type ArtistStatistics } from '@/lib/api/statistics'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle, ShieldCheck, AlertCircle, Loader2, Copy } from 'lucide-react'
@@ -138,7 +139,12 @@ function DashboardContent() {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="logo">
-            <Music size={32} />
+            <Image
+            src='/logo-removebg-preview.png'
+            width={40}
+            height={40}
+            alt='logo'
+            />
             <span>Cameroon Music</span>
           </div>
 
