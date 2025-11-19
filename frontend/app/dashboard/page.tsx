@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/auth-store'
 import { apiClient } from '@/lib/api-client'
 import { artistApi } from '@/lib/api/artist'
+import { getMyStatistics, type UserStatistics, type ArtistStatistics } from '@/lib/api/statistics'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle, ShieldCheck, AlertCircle, Loader2, Copy } from 'lucide-react'
 import type { ArtistProfile } from '@/types/artist'
@@ -17,6 +18,8 @@ function DashboardContent() {
   const [artistProfile, setArtistProfile] = useState<ArtistProfile | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [dismissedVerification, setDismissedVerification] = useState(false)
+  const [statistics, setStatistics] = useState<UserStatistics | ArtistStatistics | null>(null)
+  const [loadingStats, setLoadingStats] = useState(true)
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -44,6 +47,8 @@ function DashboardContent() {
     } else {
       setLoadingProfile(false)
     }
+    // Load statistics for all users
+    loadStatistics()
   }, [isArtist])
 
   const loadArtistProfile = async () => {
@@ -55,6 +60,17 @@ function DashboardContent() {
       // Profile might not exist yet, which is fine
     } finally {
       setLoadingProfile(false)
+    }
+  }
+
+  const loadStatistics = async () => {
+    try {
+      const stats = await getMyStatistics()
+      setStatistics(stats)
+    } catch (error: any) {
+      console.error('Failed to load statistics:', error)
+    } finally {
+      setLoadingStats(false)
     }
   }
 
@@ -180,8 +196,19 @@ function DashboardContent() {
                 <PlayCircle size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">0</div>
-                <div className="stat-label">{isArtist ? 'Songs Uploaded' : 'Songs Played'}</div>
+                {loadingStats ? (
+                  <Loader2 size={20} className="spinner" />
+                ) : (
+                  <>
+                    <div className="stat-value">
+                      {isArtist
+                        ? (statistics as ArtistStatistics)?.songsUploaded ?? 0
+                        : (statistics as UserStatistics)?.songsPlayed ?? 0
+                      }
+                    </div>
+                    <div className="stat-label">{isArtist ? 'Songs Uploaded' : 'Songs Played'}</div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -190,8 +217,19 @@ function DashboardContent() {
                 <Heart size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">0</div>
-                <div className="stat-label">{isArtist ? 'Followers' : 'Favorites'}</div>
+                {loadingStats ? (
+                  <Loader2 size={20} className="spinner" />
+                ) : (
+                  <>
+                    <div className="stat-value">
+                      {isArtist
+                        ? (statistics as ArtistStatistics)?.followers ?? 0
+                        : (statistics as UserStatistics)?.favorites ?? 0
+                      }
+                    </div>
+                    <div className="stat-label">{isArtist ? 'Followers' : 'Favorites'}</div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -200,8 +238,19 @@ function DashboardContent() {
                 <TrendingUp size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">0</div>
-                <div className="stat-label">{isArtist ? 'Total Plays' : 'Playlists'}</div>
+                {loadingStats ? (
+                  <Loader2 size={20} className="spinner" />
+                ) : (
+                  <>
+                    <div className="stat-value">
+                      {isArtist
+                        ? (statistics as ArtistStatistics)?.totalPlays ?? 0
+                        : (statistics as UserStatistics)?.playlists ?? 0
+                      }
+                    </div>
+                    <div className="stat-label">{isArtist ? 'Total Plays' : 'Playlists'}</div>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -287,12 +336,12 @@ function DashboardContent() {
                     <div className="action-title">Discover Music</div>
                     <div className="action-description">Find new songs</div>
                   </button>
-                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                  <button className="action-card" onClick={() => router.push('/library')}>
                     <Heart size={32} />
                     <div className="action-title">Your Library</div>
                     <div className="action-description">Saved songs & playlists</div>
                   </button>
-                  <button className="action-card" onClick={() => alert('Coming soon!')}>
+                  <button className="action-card" onClick={() => router.push('/artists')}>
                     <User size={32} />
                     <div className="action-title">Follow Artists</div>
                     <div className="action-description">Connect with creators</div>

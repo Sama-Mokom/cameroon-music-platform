@@ -54,9 +54,14 @@ model User {
   // Relations
   refreshTokens         RefreshToken[]
   artistProfile         ArtistProfile?
-  reviewedVerifications Verification[] // Verifications reviewed by this admin
-  songs                 Song[]          // Songs uploaded by this artist
-  duplicateReviews      DuplicateMatch[] // Duplicate matches reviewed by this admin
+  reviewedVerifications Verification[]   // Verifications reviewed by this admin
+  songs                 Song[]            // Songs uploaded by this artist
+  duplicateReviews      DuplicateMatch[]  // Duplicate matches reviewed by this admin
+  playHistory           PlayHistory[]     // Songs played by this user
+  favorites             Favorite[]        // User's favorite songs
+  playlists             Playlist[]        // User's playlists
+  following             Follow[]          @relation("Followers") // Artists this user follows
+  followers             Follow[]          @relation("Following") // Users following this artist
 
   @@map("users")
 }
@@ -139,6 +144,9 @@ model Song {
   fingerprint      AudioFingerprint?
   originalMatches  DuplicateMatch[]  @relation("OriginalSong")
   duplicateMatches DuplicateMatch[]  @relation("DuplicateSong")
+  playHistory      PlayHistory[]     // Play history for this song
+  favorites        Favorite[]        // Users who favorited this song
+  playlistSongs    PlaylistSong[]    // Playlists containing this song
 
   @@index([artistId])
   @@index([createdAt])
@@ -185,4 +193,85 @@ model DuplicateMatch {
   @@index([duplicateSongId])
   @@index([status])
   @@map("duplicate_matches")
+}
+
+// Play History - Track when users play songs
+model PlayHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  songId    String
+  playedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([songId])
+  @@index([playedAt])
+  @@map("play_history")
+}
+
+// Favorites - User favorite songs
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  songId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@index([userId])
+  @@index([songId])
+  @@map("favorites")
+}
+
+// Playlists - User-created playlists
+model Playlist {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  songs PlaylistSong[]
+
+  @@index([userId])
+  @@map("playlists")
+}
+
+// PlaylistSong - Songs in playlists (join table)
+model PlaylistSong {
+  id         String   @id @default(uuid())
+  playlistId String
+  songId     String
+  position   Int
+  addedAt    DateTime @default(now())
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+  @@index([playlistId])
+  @@index([songId])
+  @@map("playlist_songs")
+}
+
+// Follow - Artist followers
+model Follow {
+  id         String   @id @default(uuid())
+  followerId String   // The user who follows
+  artistId   String   // The artist being followed
+  createdAt  DateTime @default(now())
+
+  follower User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  artist   User @relation("Following", fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, artistId])
+  @@index([followerId])
+  @@index([artistId])
+  @@map("follows")
 }

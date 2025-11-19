@@ -1,7 +1,8 @@
 import { Song, UploadSongResponse } from '@/types/song';
 import { useAuthStore } from '@/stores/auth-store';
+import { getApiUrl } from '../get-api-url';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_URL = getApiUrl();
 
 export interface UploadSongData {
   title: string;

@@ -8,6 +8,7 @@ import { SongUploadProgress } from '@/types/song';
 import { useAuthStore } from '@/stores/auth-store';
 import DuplicateWarningModal from '@/components/fingerprinting/DuplicateWarningModal';
 import { DuplicateMatch } from '@/types/fingerprint';
+import { getApiUrl } from '@/lib/get-api-url';
 import './upload.css';
 
 const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac', 'audio/x-flac'];
@@ -70,7 +71,8 @@ export default function SongUploadPage() {
           return;
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/artists/me`, {
+        const apiUrl = getApiUrl();
+        const response = await fetch(`${apiUrl}/api/artists/me`, {
           headers: {
             'Authorization': `Bearer ${tokens.accessToken}`,
             'Content-Type': 'application/json',

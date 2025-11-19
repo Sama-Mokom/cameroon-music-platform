@@ -1,0 +1,350 @@
+.artists-page {
+  min-height: 100vh;
+  background: #0D0D0D;
+  padding: 2rem 1.5rem 120px 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.artists-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+}
+
+.artists-loading svg {
+  color: #1DB954;
+}
+
+.artists-loading p {
+  color: #B3B3B3;
+  font-size: 1rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.artists-header {
+  margin-bottom: 2.5rem;
+}
+
+.artists-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.artists-header-content svg {
+  color: #1DB954;
+  flex-shrink: 0;
+}
+
+.artists-header-content h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.artists-header-content p {
+  font-size: 1rem;
+  color: #B3B3B3;
+  margin: 0.5rem 0 0 0;
+}
+
+.artists-error {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 8px;
+  color: #F44336;
+  margin-bottom: 2rem;
+}
+
+.artists-error span {
+  flex: 1;
+}
+
+.artists-retry-btn {
+  background: none;
+  border: 1px solid #F44336;
+  color: #F44336;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.artists-retry-btn:hover {
+  background: #F44336;
+  color: #FFFFFF;
+}
+
+.artists-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  color: #B3B3B3;
+}
+
+.artists-empty svg {
+  color: #333333;
+  margin-bottom: 1.5rem;
+}
+
+.artists-empty h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 0.75rem 0;
+}
+
+.artists-empty p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.artist-card {
+  background: #181818;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.artist-card:hover {
+  background: #282828;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.artist-card-header {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(135deg, #1DB954, #1ED760);
+}
+
+.artist-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artist-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.artist-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.artist-avatar-container {
+  position: relative;
+  margin-top: -50px;
+  margin-bottom: 1rem;
+}
+
+.artist-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #181818;
+  object-fit: cover;
+}
+
+.artist-avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #181818;
+  background: #282828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #B3B3B3;
+}
+
+.artist-verified-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: #1DB954;
+  border: 3px solid #181818;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.artist-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 0.5rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.artist-bio {
+  font-size: 0.875rem;
+  color: #B3B3B3;
+  margin: 0 0 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.artist-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.artist-genre,
+.artist-location {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  background: #282828;
+  color: #B3B3B3;
+}
+
+.artist-genre {
+  background: rgba(29, 185, 84, 0.1);
+  color: #1DB954;
+}
+
+.follow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: #1DB954;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 24px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.follow-btn:hover:not(:disabled) {
+  background: #1ED760;
+  transform: scale(1.05);
+}
+
+.follow-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.follow-btn.following {
+  background: transparent;
+  border: 1px solid #B3B3B3;
+  color: #B3B3B3;
+}
+
+.follow-btn.following:hover:not(:disabled) {
+  border-color: #F44336;
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .artists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .artists-page {
+    padding: 1.5rem 1rem 120px 1rem;
+  }
+
+  .artists-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .artists-header-content h1 {
+    font-size: 2rem;
+  }
+
+  .artists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .artists-page {
+    padding: 1rem 0.75rem 120px 0.75rem;
+  }
+
+  .artists-header-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .artists-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .artist-card-body {
+    padding: 1rem;
+  }
+}

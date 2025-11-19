@@ -13,7 +13,10 @@
       "Bash(cat:*)",
       "Bash(node -e:*)",
       "Bash(node check-songs.js:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(timeout 10 npm run build:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout 5 node:*)"
     ],
     "deny": [],
     "ask": []
