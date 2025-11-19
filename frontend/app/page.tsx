@@ -55,7 +55,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <main className="min-h-screen bg-gradient-to-br bg-black dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
@@ -65,130 +65,54 @@ export default function Home() {
                 🎵
               </div>
             </div>
-            <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h1 className="text-4xl font-bold mb-4 text-white dark:text-white">
               Cameroon Music Industry Platform
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
+            <p className="text-lg text-white dark:text-gray-300">
               Connect, Create, and Celebrate Cameroonian Music
             </p>
           </div>
 
-          {/* System Status Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
-              <span className="mr-3">System Status</span>
-              {apiStatus === 'online' && dbStatus === 'online' && (
-                <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full">
-                  All Systems Operational
-                </span>
-              )}
-            </h2>
+          {/* Hero / Intro Section */}
+          <section className="relative rounded-lg overflow-hidden mb-8 bg-black text-white">
+            <div className="absolute inset-0 bg-black/95" />
+            <div className="relative z-10 container mx-auto px-6 py-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-3 mb-4">
+                    <img src="/logo.jpg" alt="CIMFest Logo" className="h-14 w-auto rounded-md shadow" />
+                    <span className="text-sm font-medium text-white/90">Cameroon Music Industry Platform</span>
+                  </div>
 
-            <div className="space-y-4">
-              {/* Frontend Status */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <StatusIcon status="online" />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Frontend (Next.js)</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {currentFrontendUrl || 'localhost:3000'}
-                    </p>
+                  <h2 className="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-4">
+                    Showcase. Protect. Celebrate Cameroonian Music.
+                  </h2>
+
+                  <p className="text-lg text-white/80 mb-6 max-w-xl">
+                    Upload your tracks, build your audience, and keep ownership safe with our audio fingerprinting & duplicate detection. Discover the community, manage releases, and grow your career.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4">
+                    <Link href="/signup" className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold shadow">
+                      Get Started
+                    </Link>
+            
                   </div>
                 </div>
-                <StatusText status="online" />
-              </div>
 
-              {/* API Status */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <StatusIcon status={apiStatus} />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">API (NestJS)</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {currentApiUrl || 'localhost:4000'}
-                    </p>
+                <div className="flex justify-center md:justify-end">
+                  <div className="w-full max-w-md p-6 bg-neutral-900/70 rounded-xl shadow-lg backdrop-blur">
+                    <img src="/cimfestlogo.jpg" alt="CIMFest artwork" className="w-full h-52 object-cover rounded-md mb-4" />
+                    <div className="text-sm text-white/80">
+                      <strong className="block text-white">Featured</strong>
+                      Listen to top tracks and explore trending artists on the platform.
+                    </div>
                   </div>
                 </div>
-                <StatusText status={apiStatus} />
-              </div>
-
-              {/* Database Status */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <StatusIcon status={dbStatus} />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">Database (MySQL)</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">XAMPP - Port 3306</p>
-                  </div>
-                </div>
-                <StatusText status={dbStatus} />
               </div>
             </div>
+          </section>
 
-            {apiStatus === 'offline' && (
-              <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  <strong>Note:</strong> Make sure XAMPP MySQL is running and the backend server is started. Run <code className="bg-yellow-100 dark:bg-yellow-800 px-2 py-1 rounded">npm run start:dev</code> in the backend directory.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Auth Status / CTA */}
-          {isAuthenticated ? (
-            <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white text-center">
-              <h3 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h3>
-              <p className="mb-6">You&apos;re logged in and ready to go.</p>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Go to Dashboard
-              </button>
-            </div>
-          ) : (
-            <div className="bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg shadow-xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">🎉 Milestone 2: Authentication Complete</h3>
-              <p className="mb-4">Full authentication system is now live:</p>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 mr-2" />
-                  User Registration & Login
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 mr-2" />
-                  JWT Access & Refresh Tokens
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 mr-2" />
-                  Protected Routes & Auth Guards
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 mr-2" />
-                  Artist & User Account Types
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 mr-2" />
-                  Redis Session Management
-                </li>
-              </ul>
-              <div className="flex gap-4">
-                <Link
-                  href="/signup"
-                  className="flex-1 bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center"
-                >
-                  Create Account
-                </Link>
-                <Link
-                  href="/login"
-                  className="flex-1 bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors text-center"
-                >
-                  Sign In
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </main>
