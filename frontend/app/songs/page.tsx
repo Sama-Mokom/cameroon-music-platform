@@ -6,6 +6,7 @@ import { getAllSongs } from '@/lib/api/songs';
 import { Song } from '@/types/song';
 import { SongCard } from '@/components/audio/SongCard';
 import './songs.css';
+import Image from 'next/image';
 
 export default function SongsPage() {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -47,7 +48,12 @@ export default function SongsPage() {
     <div className="songs-page">
       <div className="songs-header">
         <div className="songs-header-content">
-          <Music size={48} />
+          <Image
+          src='/logo-removebg-preview.png'
+          width={40}
+          height={40}
+          alt='logo'
+           />
           <div>
             <h1>Discover Music</h1>
             <p>{total} {total === 1 ? 'song' : 'songs'} from verified artists</p>
