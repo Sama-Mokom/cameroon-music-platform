@@ -7,8 +7,9 @@ import { apiClient } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { AuthResponse, LoginRequest } from '@/types/auth'
 // Import both Eye and EyeOff icons
-import { Music, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react' 
+import { Music, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import './login.css'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -60,32 +61,40 @@ export default function LoginPage() {
         {/* Left side - Branding (unchanged) */}
         <div className="login-branding">
           {/* ... (rest of branding content) ... */}
-           <div className="brand-content">
-            <div className="brand-icon">
-              <Music size={48} />
-            </div>
-            <h1 className="brand-title">
-              Welcome Back
-            </h1>
-            <p className="brand-description">
-              Sign in to continue your musical journey. Connect with artists, discover new music, and be part of the Cameroonian music revolution.
-            </p>
-
-            <div className="stats-grid">
-              <div className="stat-item">
-                <div className="stat-number">10K+</div>
-                <div className="stat-label">Artists</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-number">50K+</div>
-                <div className="stat-label">Songs</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-number">100K+</div>
-                <div className="stat-label">Listeners</div>
-              </div>
-            </div>
-          </div>
+          <div className="brand-content">
+                       
+            <div className="brand-icon">
+                           
+              <Image src="/logo-removebg-preview.png" width={40} height={40} alt="logo" />         
+               
+            </div>
+                       <h1 className="brand-title">             Welcome Back            </h1>       
+               
+            <p className="brand-description">
+                           Sign in to continue your musical journey. Connect with artists, discover
+              new music, and be part of the Cameroonian music revolution.            
+            </p>
+                       
+            <div className="stats-grid">
+                           
+              <div className="stat-item">
+                               <div className="stat-number">10K+</div>               
+                <div className="stat-label">Artists</div>             
+              </div>
+                           
+              <div className="stat-item">
+                               <div className="stat-number">50K+</div>               
+                <div className="stat-label">Songs</div>             
+              </div>
+                           
+              <div className="stat-item">
+                               <div className="stat-number">100K+</div>               
+                <div className="stat-label">Listeners</div>             
+              </div>
+                         
+            </div>
+                     
+          </div>
         </div>
 
         {/* Right side - Form */}
@@ -137,7 +146,7 @@ export default function LoginPage() {
                   required
                   autoComplete="current-password"
                 />
-                
+
                 {/* 🚨 TOGGLE BUTTON */}
                 <button
                   type="button"
@@ -185,11 +194,7 @@ export default function LoginPage() {
             <span>or continue as</span>
           </div>
 
-          <button
-            type="button"
-            className="guest-btn"
-            onClick={() => router.push('/')}
-          >
+          <button type="button" className="guest-btn" onClick={() => router.push('/')}>
             Browse as Guest
           </button>
         </div>

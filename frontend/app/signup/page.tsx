@@ -9,6 +9,7 @@ import { AuthResponse, RegisterRequest } from '@/types/auth'
 // 🚨 Import Eye and EyeOff for the toggle functionality
 import { Music, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import './signup.css'
+import Image from 'next/image'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -120,7 +121,12 @@ export default function SignupPage() {
         <div className="signup-branding">
           <div className="brand-content">
             <div className="brand-icon">
-              <Music size={48} />
+              <Image
+              src='/logo-removebg-preview.png'
+              width={40}
+              height={40}
+              alt='logo'
+              />
             </div>
             <h1 className="brand-title">
               Cameroon Music
