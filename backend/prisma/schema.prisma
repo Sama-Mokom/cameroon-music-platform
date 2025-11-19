@@ -32,6 +32,14 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum MatchStatus {
+  PENDING
+  REVIEWED
+  CONFIRMED_DUPLICATE
+  FALSE_POSITIVE
+  REMIX
+}
+
 // User model with full authentication support
 model User {
   id              String   @id @default(uuid())
@@ -44,10 +52,11 @@ model User {
   updatedAt       DateTime @updatedAt
 
   // Relations
-  refreshTokens       RefreshToken[]
-  artistProfile       ArtistProfile?
+  refreshTokens         RefreshToken[]
+  artistProfile         ArtistProfile?
   reviewedVerifications Verification[] // Verifications reviewed by this admin
-  songs               Song[]          // Songs uploaded by this artist
+  songs                 Song[]          // Songs uploaded by this artist
+  duplicateReviews      DuplicateMatch[] // Duplicate matches reviewed by this admin
 
   @@map("users")
 }
@@ -126,9 +135,54 @@ model Song {
   updatedAt DateTime @updatedAt
 
   // Relations
-  artist User @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  artist           User              @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  fingerprint      AudioFingerprint?
+  originalMatches  DuplicateMatch[]  @relation("OriginalSong")
+  duplicateMatches DuplicateMatch[]  @relation("DuplicateSong")
 
   @@index([artistId])
   @@index([createdAt])
   @@map("songs")
+}
+
+// Audio Fingerprint model for Milestone 5
+model AudioFingerprint {
+  id          String   @id @default(uuid())
+  songId      String   @unique
+  fingerprint String   @db.LongText // JSON array of landmarks
+  duration    Int                   // Duration in seconds
+  sampleRate  Int      @default(22050)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@map("audio_fingerprints")
+}
+
+// Duplicate Match model for Milestone 5
+model DuplicateMatch {
+  id                String      @id @default(uuid())
+  originalSongId    String
+  duplicateSongId   String
+  similarity        Float                // Match score (0-100%)
+  matchingLandmarks Int                  // Number of matching landmarks
+  status            MatchStatus @default(PENDING)
+  reviewedBy        String?              // Admin who reviewed
+  reviewedAt        DateTime?
+  resolution        String?              // Notes on resolution
+  notes             String?     @db.Text
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  originalSong  Song  @relation("OriginalSong", fields: [originalSongId], references: [id], onDelete: Cascade)
+  duplicateSong Song  @relation("DuplicateSong", fields: [duplicateSongId], references: [id], onDelete: Cascade)
+  reviewer      User? @relation(fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([originalSongId])
+  @@index([duplicateSongId])
+  @@index([status])
+  @@map("duplicate_matches")
 }

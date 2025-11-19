@@ -8,10 +8,14 @@ import { v2 as cloudinary } from 'cloudinary';
 import { parseBuffer } from 'music-metadata';
 import { UploadSongDto } from './dto/upload-song.dto';
 import { SongResponseDto, UploadSongResponseDto } from './dto/song-response.dto';
+import { FingerprintingService } from '../fingerprinting/fingerprinting.service';
 
 @Injectable()
 export class SongsService {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly fingerprintingService: FingerprintingService,
+  ) {
     // Configure Cloudinary
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -29,10 +33,36 @@ export class SongsService {
     dto: UploadSongDto,
   ): Promise<UploadSongResponseDto> {
     try {
-      // Extract audio metadata
+      // Step 1: Extract audio metadata
       const metadata = await this.extractMetadata(file.buffer);
 
-      // Upload to Cloudinary
+      // Step 2: Generate audio fingerprint (NEW - Milestone 5)
+      let fingerprintData: any = null;
+      let duplicates: any[] = [];
+
+      try {
+        console.log('Generating audio fingerprint...');
+        fingerprintData = await this.fingerprintingService.generateFingerprint(
+          file.buffer,
+        );
+
+        // Step 3: Check for duplicates (NEW - Milestone 5)
+        console.log('Checking for duplicates...');
+        const duplicateCheck =
+          await this.fingerprintingService.checkForDuplicates(fingerprintData);
+
+        if (duplicateCheck.matches.length > 0) {
+          duplicates = duplicateCheck.matches;
+          console.warn(
+            `Found ${duplicates.length} potential duplicates with similarity >= ${duplicateCheck.threshold}%`,
+          );
+        }
+      } catch (fingerprintError) {
+        // Log but don't fail upload if fingerprinting fails
+        console.error('Fingerprinting failed (non-fatal):', fingerprintError.message);
+      }
+
+      // Step 4: Upload to Cloudinary (existing)
       const uploadResult = await this.uploadToCloudinary(
         file.buffer,
         userId,
@@ -49,7 +79,7 @@ export class SongsService {
         resourceType: uploadResult.resource_type,
       });
 
-      // Create song record in database
+      // Step 5: Create song record in database (existing)
       const song = await this.prisma.song.create({
         data: {
           title: dto.title,
@@ -72,10 +102,37 @@ export class SongsService {
         },
       });
 
+      // Step 6: Store fingerprint in database (NEW - Milestone 5)
+      if (fingerprintData) {
+        try {
+          await this.fingerprintingService.storeFingerprint(
+            song.id,
+            fingerprintData,
+          );
+          console.log('Fingerprint stored successfully');
+        } catch (storeError) {
+          console.error('Failed to store fingerprint (non-fatal):', storeError.message);
+        }
+      }
+
+      // Step 7: Create duplicate match records (NEW - Milestone 5)
+      if (duplicates.length > 0) {
+        try {
+          await this.fingerprintingService.createDuplicateMatches(
+            song.id,
+            duplicates,
+          );
+          console.log(`Created ${duplicates.length} duplicate match records`);
+        } catch (matchError) {
+          console.error('Failed to create duplicate matches (non-fatal):', matchError.message);
+        }
+      }
+
       return {
         message: 'Song uploaded successfully',
         song: this.formatSongResponse(song),
-      };
+        duplicates: duplicates.length > 0 ? duplicates : undefined, // Include duplicates in response
+      } as any;
     } catch (error) {
       console.error('Error uploading song:', error);
       throw new BadRequestException(

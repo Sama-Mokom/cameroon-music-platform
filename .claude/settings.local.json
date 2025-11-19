@@ -12,7 +12,8 @@
       "Bash(npm run start:dev:*)",
       "Bash(cat:*)",
       "Bash(node -e:*)",
-      "Bash(node check-songs.js:*)"
+      "Bash(node check-songs.js:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,5 @@
 // Song types matching backend SongResponseDto
+import { DuplicateMatch } from './fingerprint';
 
 export interface Song {
   id: string;
@@ -27,6 +28,7 @@ export interface Song {
 export interface UploadSongResponse {
   message: string;
   song: Song;
+  duplicates?: DuplicateMatch[]; // Optional field returned when duplicates are detected
 }
 
 export interface UploadSongDto {

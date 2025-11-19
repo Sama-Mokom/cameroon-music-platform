@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { apiClient } from '@/lib/api-client'
 import { artistApi } from '@/lib/api/artist'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
-import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react'
+import { Music, User, LogOut, Settings, TrendingUp, Heart, PlayCircle, ShieldCheck, AlertCircle, Loader2, Copy } from 'lucide-react'
 import type { ArtistProfile } from '@/types/artist'
 import './dashboard.css'
 
@@ -264,6 +264,11 @@ function DashboardContent() {
                     <div className="action-title">Manage Verifications</div>
                     <div className="action-description">Review artist verification requests</div>
                   </button>
+                  <button className="action-card" onClick={() => router.push('/admin/duplicates')}>
+                    <Copy size={32} />
+                    <div className="action-title">Review Duplicates</div>
+                    <div className="action-description">Manage duplicate song detections</div>
+                  </button>
                   <button className="action-card" onClick={() => alert('Coming soon!')}>
                     <User size={32} />
                     <div className="action-title">Manage Users</div>
@@ -299,19 +304,22 @@ function DashboardContent() {
 
           {/* Milestone Notice */}
           <section className="milestone-notice">
-            <h3>🎉 Milestone 4 Complete: Song Upload & Cloud Storage</h3>
+            <h3>🎉 Milestone 5 Complete: Audio Fingerprinting & Duplicate Detection</h3>
             <p>
               {isArtist
                 ? isVerified
-                  ? "Upload your songs and share your music with the world! Click 'Upload Song' above to get started."
+                  ? "Upload your songs with confidence! Our AI-powered audio fingerprinting automatically detects duplicate uploads."
                   : "Complete verification to start uploading your music!"
-                : "Listen to music from verified artists across Cameroon!"}
+                : user?.role === 'ADMIN'
+                  ? "Review duplicate song detections and manage copyright protection!"
+                  : "Listen to music from verified artists across Cameroon!"}
             </p>
             <p>More features coming in the next milestones:</p>
             <ul>
-              <li>M5: Audio Fingerprinting</li>
+              <li>✅ M5: Audio Fingerprinting (Complete)</li>
               <li>M6: Booking System</li>
               <li>M7: Wallet & Payments</li>
+              <li>M8: Voice Control</li>
             </ul>
           </section>
         </div>
